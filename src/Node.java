@@ -1,86 +1,63 @@
-import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.*;
 
 public class Node extends Canvas{
-    private String label;
-    private Color background;
-    private Color foreground;
-
-    private Point point;
-    private Point topLeft;
-    private Point topRight;
-    private Point bellowLeft;
-    private Point bellowRight;
-    private int height;
-    private int width;
+    String label;
+    Point topLeft;
+    Point topRight;
+    Point bellowLeft;
+    Point bellowRight;
+    Point StringPosition;
+    int nodeHeight=50;
+    int nodeWidth=50;
+    public void setNodeWidth(int nodeWidth){
+        this.nodeWidth=nodeWidth;
+    }
+    public void setLabel(String label){
+        this.label=label;
+        this.setToolTipText(label);
+    }
+    public void setTopLeft(int x, int y){
+        this.setLocation(x, y);
+        this.topLeft=this.getLocation();
+    }
     public Node(Composite parent, int style){
         super (parent, style);
     }
-    public Node(Composite parent, int style, final String label){
-        super (parent, style);
-        this.label=label;
-
-    }
-    public void draw (PaintEvent e){
-        FontMetrics fontMetrics=e.gc.getFontMetrics();
-        Point size=e.gc.stringExtent(label);
-
-        e.gc.drawRectangle(point.x-size.y/3, point.y-size.y/4, size.x+size.y*2/3, size.y+size.y/2);
-        e.gc.drawString(label, point.x ,point.y);
-
-        this.topLeft=new Point(point.x-size.y/3, point.y-size.y/4);
-        this.topRight=new Point(point.x+size.x+size.y/3, point.y-size.y/4);
-        this.bellowLeft=new Point(point.x+size.y/3, point.y+size.y+size.y/4);
-        this.bellowRight=new Point(point.x+size.x+size.y/3, point.y+size.y+size.y/4);
-
-        this.width=this.topLeft.x-this.topRight.x;
-        this.height=this.topLeft.y-this.bellowLeft.y;
-
+    public Node(Composite parent, int style, final String label) {
+        super(parent, style);
+        this.label = label;
     }
     public Point getTopLeft(){
         return this.topLeft;
     }
-    public Point getBellowLeft(){
-        return this.bellowLeft;
-    }
     public Point getTopRight(){
-        return this.topRight;
+        return new Point(this.getTopLeft().x+nodeWidth, this.getTopLeft().y);
+    }
+    public Point getBellowLeft(){
+        return new Point(this.getTopLeft().x, this.getTopLeft().y+nodeHeight);
     }
     public Point getBellowRight(){
-        return this.bellowRight;
+        return new Point(this.getTopLeft().x+nodeWidth, this.getTopLeft().y+nodeHeight);
     }
-    public void setPoint(int x, int y){
-        this.point=new Point(x, y);
+    public void drawNode(){
+        final Rectangle rec=this.getBounds();
+        this.addPaintListener(new PaintListener() {
+            @Override
+            public void paintControl(PaintEvent e) {
+                ////e.gc.setBackground(getDisplay().getSystemColor(SWT.CO));
+                //e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+               // e.gc.fillGradientRectangle(0, 0, nodeWidth, nodeHeight, true);
+                //e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+                e.gc.drawString(label, 10, 10, true);
+                e.gc.drawRectangle(0, 0, nodeWidth, nodeHeight);
+            }
+        });
     }
-    public void setLabel(String label){
-        this.label=label;
     }
-    public String getLabel(){
-        return this.label;
-    }
-    public Point getPoint(){
-        return this.point;
-    }
-    public int getHeight(){
-        return this.height;
-    }
-    public int getWidth(){
-        return this.width;
-    }
-    public Color getBackground(){
-        return this.background;
-    }
-    public void setBackground(Color color){
-        this.background=color;
-    }
-    public Color getForeground(){
-        return this.foreground;
-    }
-    public void setForeground(Color color){
-        this.foreground=color;
-    }
-}
