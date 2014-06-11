@@ -1,8 +1,5 @@
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
@@ -147,6 +144,14 @@ public class GUI {
             }
         });
         /////////////////////////////
+        MenuItem printItem=new MenuItem(actionMenu, SWT.PUSH);
+        printItem.setText("Give the list sort elements");
+        printItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.printElement();
+            }
+        });
     }
     public static void main(String args[]){
         GUI gui=new GUI();
