@@ -6,6 +6,23 @@ public class TreeNode {
     int position; // dung de tinh khoang cach cua node
     int level; // dung de tinh duong cao
 
+    /**************/
+    /*Line*/
+    Line lineConnectParent;
+    Line lineConnectLeft;
+    Line lineConnectRight;
+    public void setLine(){
+        if (parent!=null){
+            lineConnectParent=new Line(this.node, parent.node);
+        }
+        if (left!=null){
+            lineConnectLeft=new Line(this.node, left.node);
+        }
+        if (right!=null){
+            lineConnectRight=new Line(this.node, right.node);
+        }
+    }
+    /*************/
     public TreeNode (int value){
         this.value=value;
         this.left=null;
