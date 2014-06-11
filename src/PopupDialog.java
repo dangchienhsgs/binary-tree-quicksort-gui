@@ -1,6 +1,8 @@
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -10,39 +12,44 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class Popup extends Dialog {
+public class PopupDialog extends Dialog {
+    Integer value;
 
     /* Constructor */
-    public Popup(Shell parent) {
+    public PopupDialog(Shell parent) {
         super(parent);
     }
 
-    public Popup(Shell parent, int style) {
+    public PopupDialog(Shell parent, int style) {
         super(parent, style);
     }
 
     /* Open a Dialog */
-    public void open(String title, String  labelString) {
+    public Integer open(String title, String  labelString) {
         Shell parent = getParent();
-        final Shell shell =
-                new Shell(parent, SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+        final Shell shell =new Shell(parent, SWT.TITLE | SWT.BORDER);
         shell.setText(title);
+        GridLayout gridLayout=new GridLayout();
+        gridLayout.numColumns=1;
+        gridLayout.makeColumnsEqualWidth = true;
 
-        shell.setLayout(new FillLayout(SWT.VERTICAL));
+        shell.setLayout(gridLayout);
 
-        Label label = new Label(shell, SWT.NONE);
+        Label label = new Label(shell, SWT.CENTER);
+        label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
         label.setText(labelString);
 
+        //final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
 
-        final Button buttonOK = new Button(shell, SWT.PUSH);
+        final Button buttonOK = new Button(shell, SWT.PUSH | SWT.CENTER);
         buttonOK.setText("OK");
+
 
         buttonOK.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
                 shell.dispose();
             }
         });
-
 
         shell.addListener(SWT.Traverse, new Listener() {
             public void handleEvent(Event event) {
@@ -51,7 +58,8 @@ public class Popup extends Dialog {
             }
         });
 
-        shell.pack();
+//        text.setText("");
+        shell.setSize((labelString.length())*9, 200);
         shell.open();
 
         Display display = parent.getDisplay();
@@ -59,6 +67,7 @@ public class Popup extends Dialog {
             if (!display.readAndDispatch())
                 display.sleep();
         }
+        return value;
     }
 
 }
