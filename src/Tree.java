@@ -1,3 +1,5 @@
+import org.eclipse.swt.widgets.Shell;
+
 public class Tree {
     TreeNode root;
 
@@ -30,7 +32,12 @@ public class Tree {
         if (node==null){
             makeRoot(value);
             return root;
-        } else if (node.getValue()<value){
+        } else
+        if (node.getValue()==value){
+            new PopupDialog(new Shell()).open("Add a node","This node has been create");
+            return null;
+        } else
+            if (node.getValue()<value){
             if (node.right==null){
                 node.right=new TreeNode(value);
                 node.right.level=node.level+1;
@@ -41,7 +48,7 @@ public class Tree {
             } else {
                 return addNode(value, node.right);
             }
-        } else if (node.getValue()>=value){
+        } else if (node.getValue()>value){
             if (node.left==null){
                 node.left=new TreeNode(value);
                 node.left.level=node.level+1;
