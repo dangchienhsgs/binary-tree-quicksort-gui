@@ -11,6 +11,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
+import java.security.Key;
+
 public class DrawingComposite extends ScrolledComposite {
 
     Tree tree; // The tree of this program
@@ -23,7 +25,7 @@ public class DrawingComposite extends ScrolledComposite {
         this.setLayout(new FillLayout()); // Setlayout
         // Create a status bar
         statusBar = new Label(getParent(), SWT.NONE);
-        statusBar.setText("Welcome to TreeApplication !");
+        statusBar.setText("Nhom 3 KSTN CNTT K57");
         // Set Layout for the status bar
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = 4;
@@ -70,35 +72,6 @@ public class DrawingComposite extends ScrolledComposite {
                 }
             }
         });
-        // add Mouse track listener
-        /*treeNode.node.addMouseTrackListener(new MouseTrackAdapter() {
-            @Override
-            public void mouseExit(MouseEvent e) {
-                treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                if (treeNode.left != null) {
-                    treeNode.left.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                }
-                if (treeNode.right != null) {
-                    treeNode.right.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                }
-                if (treeNode.parent != null) {
-                    treeNode.parent.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                }
-            }
-
-            public void mouseEnter(MouseEvent e) {
-                treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
-                if (treeNode.left != null) {
-                    treeNode.left.node.setColor(SWT.COLOR_RED, SWT.COLOR_WHITE);
-                }
-                if (treeNode.right != null) {
-                    treeNode.right.node.setColor(SWT.COLOR_BLACK, SWT.COLOR_WHITE);
-                }
-                if (treeNode.parent != null) {
-                    treeNode.parent.node.setColor(SWT.COLOR_BLUE, SWT.COLOR_WHITE);
-                }
-            }
-        });*/
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -107,10 +80,20 @@ public class DrawingComposite extends ScrolledComposite {
 
     PaintListener paintListener[] = new PaintListener[1000];
     int countListener = 0;
+    public void reDrawComposite(){
+        removeAllPaintListener();
+        tree.computeAllNodeTree();
+        resetBounds(tree.root);
+        resetLine(tree.root);
+        composite.redraw();
+    }
 
     public void remove_findNode(final int value) {
-        treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+        if (treeNode==null){
+            new PopupDialog(getShell()).open("Remove a node", "The tree doesn't have any node with the value: "+new Integer(value).toString());
+        } else
         if (treeNode.getValue() > value) {
+            treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
             KeyListener keyListener = new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent keyEvent) {
@@ -124,6 +107,7 @@ public class DrawingComposite extends ScrolledComposite {
             };
             this.addKeyListener(keyListener);
         } else if (treeNode.getValue() < value) {
+            treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
             KeyListener keyListener = new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent keyEvent) {
@@ -137,85 +121,67 @@ public class DrawingComposite extends ScrolledComposite {
             };
             this.addKeyListener(keyListener);
         } else if (treeNode.getValue() == value) {
-            // Da xac dinh duoc ndoe can xoa
-            if (treeNode == tree.root) {
-                if ((treeNode.right == null) && (treeNode.left == null)) {
-                    treeNode.node.dispose();
-                    treeNode = null;
-                    removeAllPaintListener();
-                    tree.computeAllNodeTree();
-                    resetBounds(tree.root);
-                    resetLine(tree.root);
-                    composite.redraw();
-                } else if ((treeNode.left != null) && (treeNode.right == null)) {
-                    treeNode.node.dispose();
-                    tree.root = treeNode.left;
-                    removeAllPaintListener();
-                    tree.computeAllNodeTree();
-                    resetBounds(tree.root);
-                    resetLine(tree.root);
-                    composite.redraw();
-                } else if ((treeNode.right != null) &&(treeNode.left == null)){
-                    treeNode.node.dispose();
-                    tree.root = treeNode.right;
-                    removeAllPaintListener();
-                    tree.computeAllNodeTree();
-                    resetBounds(tree.root);
-                    resetLine(tree.root);
-                    composite.redraw();
-                }else{
-                    rightMinNode = treeNode.right;
-                    remove_findMinNode();
+            treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+            KeyListener keyListener=new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    if (keyEvent.keyCode==13){
+                        removeKeyListener(this);
+                        if (treeNode == tree.root) {
+                            if ((treeNode.right == null) && (treeNode.left == null)) {
+                                treeNode.node.dispose();
+                                treeNode = null;
+                                tree.root=null;
+                                reDrawComposite();
+                            } else if ((treeNode.left != null) && (treeNode.right == null)) {
+                                treeNode.node.dispose();
+                                tree.root = treeNode.left;
+                                reDrawComposite();
+                            } else if ((treeNode.right != null) &&(treeNode.left == null)){
+                                treeNode.node.dispose();
+                                tree.root = treeNode.right;
+                                reDrawComposite();
+                            }else{
+                                rightMinNode = treeNode.right;
+                                remove_findMinNode();
+                            }
+
+                        } else if ((treeNode.right == null) && (treeNode.left == null)) {
+
+                            if (treeNode.parent.left == treeNode) treeNode.parent.left = null;
+                            else if (treeNode.parent.right == treeNode) treeNode.parent.right = null;
+
+                            treeNode.node.dispose();
+                            treeNode = null;
+
+                            reDrawComposite();
+
+                        } else if (treeNode.right == null) {
+                            treeNode.left.parent = treeNode.parent;
+                            if (treeNode.parent.left == treeNode) {
+                                treeNode.parent.left = treeNode.left;
+                            } else treeNode.parent.right = treeNode.left;
+                            treeNode.node.dispose();
+                            reDrawComposite();
+
+                        } else if (treeNode.left == null) {
+                            treeNode.right.parent = treeNode.parent;
+                            if (treeNode.parent.right == treeNode) {
+                                treeNode.parent.right = treeNode.right;
+                            } else {
+                                treeNode.parent.left = treeNode.right;
+                            }
+                            treeNode.node.dispose();
+                            reDrawComposite();
+
+                        } else {
+                            rightMinNode = treeNode.right;
+                            remove_findMinNode();
+                        }
+                    }
                 }
-
-            } else if ((treeNode.right == null) && (treeNode.left == null)) {
-
-                if (treeNode.parent.left == treeNode) treeNode.parent.left = null;
-                else if (treeNode.parent.right == treeNode) treeNode.parent.right = null;
-
-                //removePaintListener(treeNode.lineConnectParent.paintListener);
-
-                treeNode.node.dispose();
-                treeNode = null;
-
-                removeAllPaintListener();
-                tree.computeAllNodeTree();
-                resetBounds(tree.root);
-                resetLine(tree.root);
-                composite.redraw();
-
-            } else if (treeNode.right == null) {
-                treeNode.left.parent = treeNode.parent;
-                if (treeNode.parent.left == treeNode) {
-                    treeNode.parent.left = treeNode.left;
-                } else treeNode.parent.right = treeNode.left;
-
-                removeAllPaintListener();
-                treeNode.node.dispose();
-                tree.computeAllNodeTree();
-                resetBounds(tree.root);
-                resetLine(tree.root);
-                composite.redraw();
-
-            } else if (treeNode.left == null) {
-                treeNode.right.parent = treeNode.parent;
-                if (treeNode.parent.right == treeNode) {
-                    treeNode.parent.right = treeNode.right;
-                } else {
-                    treeNode.parent.left = treeNode.right;
-                }
-
-                removeAllPaintListener();
-                treeNode.node.dispose();
-                tree.computeAllNodeTree();
-                resetBounds(tree.root);
-                resetLine(tree.root);
-                composite.redraw();
-
-            } else {
-                rightMinNode = treeNode.right;
-                remove_findMinNode();
-            }
+            };
+            this.addKeyListener(keyListener);
         }
     }
 
@@ -247,35 +213,24 @@ public class DrawingComposite extends ScrolledComposite {
         rightMinNode.node.dispose();
 
         if (rightMinNode == treeNode.right) {
-            //removePaintListener(treeNode.lineConnectRight.paintListener);
-            //if (rightMinNode.right != null) removePaintListener(rightMinNode.lineConnectRight.paintListener);
 
             treeNode.right = rightMinNode.right;
             if (rightMinNode.right != null) {
                 rightMinNode.right.parent = treeNode;
             }
         } else {
-            //removePaintListener(rightMinNode.parent.lineConnectLeft.paintListener);
-            //removePaintListener(rightMinNode.lineConnectParent.paintListener);
             if (rightMinNode.right != null) {
-                //removePaintListener(rightMinNode.lineConnectRight.paintListener);
                 rightMinNode.parent.left = rightMinNode.right;
                 rightMinNode.right.parent = rightMinNode.parent;
                 rightMinNode = rightMinNode.right;
             } else {
-                //removePaintListener(rightMinNode.parent.lineConnectLeft.paintListener);
-                //removePaintListener(rightMinNode.lineConnectParent.paintListener);
                 rightMinNode.parent.lineConnectLeft = null;
                 rightMinNode.parent.left = null;
                 rightMinNode = null;
             }
         }
 
-        removeAllPaintListener();
-        tree.computeAllNodeTree();
-        resetBounds(tree.root);
-        resetLine(tree.root);
-        composite.redraw();
+        reDrawComposite();
     }
 
     public void resetLine(TreeNode treeNode) {
@@ -360,15 +315,19 @@ public class DrawingComposite extends ScrolledComposite {
     }
 
     public void browseAllNode(TreeNode treeNode, int typeBrowse) {
-        n = 0;
-        if (typeBrowse == 1) {
-            createQueneNodeFirst(treeNode);
-        } else if (typeBrowse == 2) {
-            createQueneNodeMiddle(treeNode);
-        } else if (typeBrowse == 3) {
-            createQueneNodeLast(treeNode);
+        if (treeNode!=null){
+            n = 0;
+            if (typeBrowse == 1) {
+                createQueneNodeFirst(treeNode);
+            } else if (typeBrowse == 2) {
+                createQueneNodeMiddle(treeNode);
+            } else if (typeBrowse == 3) {
+                createQueneNodeLast(treeNode);
+            }
+            browseNode(0);
+        } else {
+            new PopupDialog(getShell()).open("Alert", "There is no node to browse");
         }
-        browseNode(0);
     }
 
     ///////////////////////////////////////////////////////////
@@ -526,10 +485,11 @@ public class DrawingComposite extends ScrolledComposite {
                 KeyListener keyListener = new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
+                        System.out.println (e.keyCode);
                         if (e.keyCode == 13) {
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
-                        } else if (e.keyCode == 27) {
+                        } else if (e.keyCode == 8) {
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             findNodeStep(treeNode.parent, value);
@@ -550,7 +510,7 @@ public class DrawingComposite extends ScrolledComposite {
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
                             findNodeStep(treeNode.left, value);
-                        } else if (e.keyCode == 27) {
+                        } else if (e.keyCode == 8) {
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             findNodeStep(treeNode.parent, value);
@@ -570,7 +530,7 @@ public class DrawingComposite extends ScrolledComposite {
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
                             findNodeStep(treeNode.right, value);
-                        } else if (e.keyCode == 27) {
+                        } else if (e.keyCode == 8) {
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             findNodeStep(treeNode.parent, value);
@@ -583,7 +543,7 @@ public class DrawingComposite extends ScrolledComposite {
         return null;
     }
 
-    //////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
     /*
     Tim successsor
      */
@@ -595,6 +555,7 @@ public class DrawingComposite extends ScrolledComposite {
                 if (keyEvent.keyCode == 13) {
                     removeKeyListener(this);
                     if (treeNode.left != null) {
+                        // Neu co con trai
                         treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                         findSuccescorStep(treeNode.left);
                     } else {
@@ -619,13 +580,60 @@ public class DrawingComposite extends ScrolledComposite {
             }
         }
     }
-
-    public void findSucesscor(int value) {
+    public void findSuccescorBack(final TreeNode treeNode, final int value){
+        treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+        if (treeNode.left==null){
+            if (treeNode==tree.root){
+                new PopupDialog(getShell()).open("Finding Successor", "This node is its sucesscor");
+            } else {
+               KeyListener keyListener=new KeyAdapter() {
+                   @Override
+                   public void keyPressed(KeyEvent keyEvent) {
+                       if (keyEvent.keyCode==13){
+                           removeKeyListener(this);
+                           treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                           findSuccescorBack(treeNode.parent, value);
+                       }
+                   }
+               };
+               this.addKeyListener(keyListener);
+            }
+        } else if (treeNode.left!=null) {
+            KeyListener keyListener=new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    if (keyEvent.keyCode==13){
+                        removeKeyListener(this);
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        new PopupDialog(getShell()).open("Finding Sucessor","The node with the value "+new Integer(treeNode.getValue()).toString()
+                                +" is the successor of the node with the value "+new Integer(value).toString());
+                    }
+                }
+            };
+            this.addKeyListener(keyListener);
+        }
+    }
+    public void findSucesscor(final int value) {
         treeNode = null;
         findNode(tree.root, value);
         if (treeNode != null) {
             if (treeNode.right == null) {
-                statusBar.setText("This node don't have the right node");
+                treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+                KeyListener keyListener=new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent) {
+                        if (keyEvent.keyCode==13){
+                            System.out.println ("Hello World");
+                            removeKeyListener(this);
+                            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                            if (treeNode==tree.root){
+                                new PopupDialog(getShell()).open("Finding Succesor", "This node is its succesccor");
+                            } else
+                            findSuccescorBack(treeNode.parent, value);
+                        }
+                    }
+                };
+                this.addKeyListener(keyListener);
             } else {
                 treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
                 KeyListener keyListener = new KeyAdapter() {
@@ -641,12 +649,12 @@ public class DrawingComposite extends ScrolledComposite {
                 this.addKeyListener(keyListener);
             }
         } else {
-            // Thong bao khong tim thay nut
+            new PopupDialog(getShell()).open("Alert", "The node "+new Integer(value).toString()+" hasn't been create");
         }
     }
 
     ///////////////////////////////////////
-    public void findPredesscorStep(final TreeNode treeNode) {
+    public void findPredesscorStep(final TreeNode treeNode, final int value) {
         treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
         KeyListener keyListener = new KeyAdapter() {
             @Override
@@ -655,24 +663,71 @@ public class DrawingComposite extends ScrolledComposite {
                     removeKeyListener(this);
                     if (treeNode.right != null) {
                         treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                        findPredesscorStep(treeNode.right);
+                        findPredesscorStep(treeNode.right, value);
                     } else {
                         // Da tim thay
                         treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                        statusBar.setText("Da tim thay");
+                        statusBar.setText("Node "+new Integer(treeNode.getValue()).toString()+" is the predesccesor of"+new Integer(value).toString());
                     }
                 }
             }
         };
         this.addKeyListener(keyListener);
     }
-
-    public void findPredesscor(int value) {
+    public void findPredesscorBack(final TreeNode treeNode, final int value){
+        treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+        if (treeNode.right==null){
+            if (treeNode==tree.root){
+                new PopupDialog(getShell()).open("Finding Successor", "This node is its predecesscor");
+            } else {
+                KeyListener keyListener=new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent) {
+                        if (keyEvent.keyCode==13){
+                            removeKeyListener(this);
+                            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                            findSuccescorBack(treeNode.parent, value);
+                        }
+                    }
+                };
+                this.addKeyListener(keyListener);
+            }
+        } else if (treeNode.right!=null) {
+            KeyListener keyListener=new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    if (keyEvent.keyCode==13){
+                        removeKeyListener(this);
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        new PopupDialog(getShell()).open("Finding Predcessor","The node with the value "+new Integer(treeNode.getValue()).toString()
+                                +" is the Preccessor of the node with the value "+new Integer(value).toString());
+                    }
+                }
+            };
+            this.addKeyListener(keyListener);
+        }
+    }
+    public void findPredesscor(final int value) {
         treeNode = null;
         findNode(tree.root, value);
         if (treeNode != null) {
             if (treeNode.left == null) {
-                statusBar.setText("This node don't have the left node");
+                treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+                KeyListener keyListener=new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent) {
+                        if (keyEvent.keyCode==13){
+                            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                            removeKeyListener(this);
+                            if (treeNode==tree.root){
+                                new PopupDialog(getShell()).open("Findding Predesscor", "This node is its Predesscor");
+                            } else{
+                                findPredesscorBack(treeNode.parent, value);
+                            }
+                        }
+                    }
+                };
+            this.addKeyListener(keyListener);
             } else {
                 treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
                 KeyListener keyListener = new KeyAdapter() {
@@ -681,14 +736,14 @@ public class DrawingComposite extends ScrolledComposite {
                         if (keyEvent.keyCode == 13) {
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            findPredesscorStep(treeNode.left);
+                            findPredesscorStep(treeNode.left, value);
                         }
                     }
                 };
                 this.addKeyListener(keyListener);
             }
         } else {
-            // Thong bao khong tim thay nut
+            new PopupDialog(getShell()).open("Finding Predesscor", "There is no node with that value");
         }
     }
 
