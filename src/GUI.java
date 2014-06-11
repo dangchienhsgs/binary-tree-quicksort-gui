@@ -17,11 +17,11 @@ public class GUI {
         shell.setText("Java Binary Tree Program");
         drawPanel=new DrawingComposite(this.shell, SWT.BORDER| SWT.V_SCROLL| SWT.H_SCROLL);
         drawPanel.setLayoutData(new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL));
-        drawPanel.addNode(9);
+        /*drawPanel.addNode(9);
         drawPanel.addNode(3);
         drawPanel.addNode(16);
         drawPanel.addNode(14);
-        drawPanel.addNode(15);
+        drawPanel.addNode(15);*/
     }
     public void open(){
         this.shell.open();
@@ -121,8 +121,10 @@ public class GUI {
             public void widgetSelected(SelectionEvent e) {
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Delete a node", "Please give the value of the node: ");
-                drawPanel.treeNode =drawPanel.tree.root;
-                drawPanel.remove_findNode(value);
+                if (value!=null){
+                    drawPanel.treeNode =drawPanel.tree.root;
+                    drawPanel.remove_findNode(value);
+                }
             }
         });
         shell.setMenuBar(menuBar);
@@ -134,7 +136,9 @@ public class GUI {
             public void widgetSelected(SelectionEvent selectionEvent) {
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Delete a node", "Please give the value of the node: ");
-                drawPanel.findSucesscor(value);
+                if (value!=null){
+                    drawPanel.findSucesscor(value);
+                }
             }
         });
         ///////////////////////////////
@@ -145,7 +149,9 @@ public class GUI {
             public void widgetSelected(SelectionEvent selectionEvent) {
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Delete a node", "Please give the value of the node: ");
-                drawPanel.findPredesscor(value);
+                if (value!=null){
+                    drawPanel.findPredesscor(value);
+                }
             }
         });
         /////////////////////////////
