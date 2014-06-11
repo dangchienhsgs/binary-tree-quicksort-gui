@@ -48,11 +48,11 @@ public class DrawingComposite extends ScrolledComposite {
     }
 
     /* Draw a line connecting two node */
-    public void drawLineConnect(PaintEvent e, Node node1, Node node2) {
+    /*public void drawLineConnect(PaintEvent e, Node node1, Node node2) {
         Point middle1 = new Point((node1.getBellowLeft().x + node1.getBellowRight().x) / 2, (node1.getBellowLeft().y + node1.getBellowRight().y) / 2);
         Point middle2 = new Point((node2.getTopLeft().x + node2.getTopRight().x) / 2, (node2.getTopLeft().y + node2.getTopRight().y) / 2);
         e.gc.drawLine(middle1.x, middle1.y, middle2.x, middle2.y);
-    }
+    }*/
 
     /* add MouseListener for the nodes */
     public void setNodeMouseListener(final TreeNode treeNode) {
@@ -123,7 +123,6 @@ public class DrawingComposite extends ScrolledComposite {
     TreeNode rightMinNode;
     public void remove_findNode(final int value){
         treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
-        System.out.println ("Hello World");
         if (treeNode.getValue()>value){
             KeyListener keyListener=new KeyAdapter() {
                 @Override
@@ -153,6 +152,7 @@ public class DrawingComposite extends ScrolledComposite {
         }
         else if (treeNode.getValue()==value){
             if (treeNode.right!=null){
+                // Da xac dinh duoc ndoe can xoa
                 rightMinNode=treeNode.right;
                 remove_findMinNode();
             }
@@ -170,6 +170,7 @@ public class DrawingComposite extends ScrolledComposite {
                             rightMinNode=rightMinNode.left;
                             remove_findMinNode();
                         } else {
+                            // Da xac dinh duoc node min right
                             remove_changeValue();
                         }
                     }
@@ -179,7 +180,37 @@ public class DrawingComposite extends ScrolledComposite {
     }
     public void remove_changeValue(){
         treeNode.setValue(rightMinNode.getValue());
-        rightMinNode.node.isDisposed();
+        treeNode.node.setLabel(new Integer(rightMinNode.getValue()).toString());
+        treeNode.node.drawNode();
+        treeNode.node.redraw();
+        rightMinNode.node.dispose();
+
+        rightMinNode=rightMinNode.right;
+        resetBounds(tree.root);
+        resetLine(treeNode);
+        composite.redraw();
+    }
+    public void resetLine(TreeNode treeNode){
+        if (treeNode!=null){
+            if (treeNode.left!=null){
+                composite.removePaintListener(treeNode.lineConnectLeft.paintListener); // xoa cai line cu
+                treeNode.lineConnectLeft=new Line(treeNode.node, treeNode.left.node); // tao cai line moi
+                composite.addPaintListener(treeNode.lineConnectLeft.paintListener); // add cai moi
+
+                treeNode.left.lineConnectParent=treeNode.lineConnectLeft;
+
+                resetLine(treeNode.left);
+            }
+            if (treeNode.right!=null){
+                composite.removePaintListener(treeNode.lineConnectRight.paintListener); // xoa cai line cu
+                treeNode.lineConnectRight=new Line(treeNode.node, treeNode.right.node); // tao cai line moi
+                composite.addPaintListener(treeNode.lineConnectRight.paintListener);
+
+                treeNode.right.lineConnectParent=treeNode.lineConnectParent;
+
+                resetLine(treeNode.left);
+            }
+        }
     }
     ////////////////////////////////////////////////////////
     /* This is the part of constructing browsing node
@@ -188,13 +219,30 @@ public class DrawingComposite extends ScrolledComposite {
     TreeNode nodeQuene[] = new TreeNode[100];
     int n = 0;
 
-    void createQueneNode(TreeNode treeNode) {
+    void createQueneNodeFirst(TreeNode treeNode) {
         if (treeNode != null) {
             nodeQuene[n] = treeNode;
             n = n + 1;
-            createQueneNode(treeNode.left);
-            createQueneNode(treeNode.right);
+            createQueneNodeFirst(treeNode.left);
+            createQueneNodeFirst(treeNode.right);
 
+        }
+    }
+    void createQueneNodeMiddle(TreeNode treeNode) {
+        if (treeNode != null) {
+            createQueneNodeMiddle(treeNode.left);
+            nodeQuene[n] = treeNode;
+            n = n + 1;
+            createQueneNodeMiddle(treeNode.right);
+
+        }
+    }
+    void createQueneNodeLast(TreeNode treeNode) {
+        if (treeNode != null) {
+            createQueneNodeLast(treeNode.left);
+            createQueneNodeLast(treeNode.right);
+            nodeQuene[n] = treeNode;
+            n = n + 1;
         }
     }
 
@@ -213,9 +261,15 @@ public class DrawingComposite extends ScrolledComposite {
         }
     }
 
-    public void browseAllNode(TreeNode treeNode) {
+    public void browseAllNode(TreeNode treeNode, int typeBrowse) {
         n = 0;
-        createQueneNode(treeNode);
+        if (typeBrowse==1){
+            createQueneNodeFirst(treeNode);
+        } else if (typeBrowse==2){
+            createQueneNodeMiddle(treeNode);
+        } else if (typeBrowse==3){
+            createQueneNodeLast(treeNode);
+        }
         browseNode(0);
     }
 
@@ -229,7 +283,6 @@ public class DrawingComposite extends ScrolledComposite {
         else i = 1;
         if (startY > destY) j = -1;
         else j = 1;
-        System.out.println(i + " " + j + " " + startX + " " + startY + " " + destX + " " + destY);
         Runnable runnable = new Runnable() {
             public void run() {
                 if ((node.getLocation().x != destX) && (node.getLocation().y != destY)) {
@@ -252,12 +305,15 @@ public class DrawingComposite extends ScrolledComposite {
         newNode.node.drawNode();
         setNodeMouseListener(newNode);
         if (newNode.parent != null) {
-            composite.addPaintListener(new PaintListener() {
-                @Override
-                public void paintControl(PaintEvent e) {
-                    drawLineConnect(e, newNode.parent.node, newNode.node);
-                }
-            });
+            newNode.lineConnectParent=new Line(newNode.parent.node, newNode.node);
+            if (newNode.parent.left==newNode){
+                newNode.parent.lineConnectLeft=newNode.lineConnectParent;
+                composite.addPaintListener(newNode.parent.lineConnectLeft.paintListener);
+            }
+            if (newNode.parent.right==newNode){
+                newNode.parent.lineConnectRight=newNode.lineConnectParent;
+                composite.addPaintListener(newNode.parent.lineConnectRight.paintListener);
+            }
         }
         composite.redraw();
         this.setMinSize((tree.getWidth() + 2) * 100, ((tree.getHeight(tree.root)) + 1) * 70);
@@ -318,12 +374,15 @@ public class DrawingComposite extends ScrolledComposite {
             if (treeNode.node == null) {
                 treeNode.node = new Node(composite, SWT.NONE);
             }
-            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-            treeNode.node.setLabel(Integer.toString(treeNode.getValue()));
-            treeNode.node.setTopLeft(100 * (treeNode.position - tree.getLeft()) + 20, 70 * (treeNode.level - 1) + 20);
-            treeNode.node.setBounds(treeNode.node.getTopLeft().x, treeNode.node.getTopLeft().y, treeNode.node.nodeWidth, treeNode.node.nodeHeight);
-            resetBounds(treeNode.left);
-            resetBounds(treeNode.right);
+            if (!treeNode.node.isDisposed()){
+                System.out.println (treeNode.getValue());
+                treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                treeNode.node.setLabel(Integer.toString(treeNode.getValue()));
+                treeNode.node.setTopLeft(100 * (treeNode.position - tree.getLeft()) + 20, 70 * (treeNode.level - 1) + 20);
+                treeNode.node.setBounds(treeNode.node.getTopLeft().x, treeNode.node.getTopLeft().y, treeNode.node.nodeWidth, treeNode.node.nodeHeight);
+                resetBounds(treeNode.left);
+                resetBounds(treeNode.right);
+            }
         }
     }
 
@@ -345,7 +404,6 @@ public class DrawingComposite extends ScrolledComposite {
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            System.out.println ("hello");
                             findNode(treeNode.parent, value);
                         }
                     }
@@ -368,7 +426,6 @@ public class DrawingComposite extends ScrolledComposite {
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            System.out.println ("hello");
                             findNode(treeNode.parent, value);
                         }
                     }
@@ -388,7 +445,6 @@ public class DrawingComposite extends ScrolledComposite {
                             findNode(treeNode.right, value);
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
-                            System.out.println ("hello");
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             findNode(treeNode.parent, value);
                         }
