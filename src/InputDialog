@@ -1,89 +1,87 @@
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.*;
 
-public class InputDialog extends Dialog {
-    Integer value;
+public class Node extends Canvas{
+    String label;
+    Point topLeft;
+    Point topRight;
+    Point bellowLeft;
+    Point bellowRight;
+    Point StringPosition;
+    int nodeHeight=50;
+    int nodeWidth=50;
 
-    /* Constructor */
-    public InputDialog(Shell parent) {
-        super(parent);
+    /*Constructor */
+    public Node(Composite parent, int style){
+        super (parent, style);
     }
 
-    public InputDialog(Shell parent, int style) {
+    public Node(Composite parent, int style, final String label) {
         super(parent, style);
+        this.label = label;
     }
 
-    /* Open a Dialog */
-    public Integer open(String title, String  labelString) {
-        Shell parent = getParent();
-        final Shell shell =
-                new Shell(parent, SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
-        shell.setText(title);
-
-        shell.setLayout(new GridLayout(2, true));
-
-
-        Label label = new Label(shell, SWT.NULL);
-        label.setText(labelString);
-
-        final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
-
-        final Button buttonOK = new Button(shell, SWT.PUSH);
-        buttonOK.setText("OK");
-
-        Button buttonCancel = new Button(shell, SWT.PUSH);
-        buttonCancel.setText("Cancel");
-
-        text.addListener(SWT.Modify, new Listener() {
-            public void handleEvent(Event event) {
-                try {
-                    value = new Integer(text.getText());
-                    buttonOK.setEnabled(true);
-                } catch (Exception e) {
-                    buttonOK.setEnabled(false);
-                }
-            }
-        });
-
-        buttonOK.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                shell.dispose();
-            }
-        });
-
-        buttonCancel.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                value = null;
-                shell.dispose();
-            }
-        });
-
-        shell.addListener(SWT.Traverse, new Listener() {
-            public void handleEvent(Event event) {
-                if(event.detail == SWT.TRAVERSE_ESCAPE)
-                    event.doit = false;
-            }
-        });
-
-        text.setText("");
-        shell.pack();
-        shell.open();
-
-        Display display = parent.getDisplay();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        return value;
+    /* Set the node width */
+    public void setNodeWidth(int nodeWidth){
+        this.nodeWidth=nodeWidth;
     }
 
+    /* Set the label */
+    public void setLabel(String label){
+        this.label=label;
+        this.setToolTipText("value: "+label);
+    }
+
+    /* set the topleft include set Location*/
+    public void setTopLeft(int x, int y){
+        this.setLocation(x, y);
+        this.setBounds(x, y, nodeWidth, nodeHeight);
+        this.topLeft=this.getLocation();
+    }
+
+    /* reset new color */
+    public void setColor(int background, int foreground){
+        this.setBackground(getDisplay().getSystemColor(background));
+        this.setForeground(getDisplay().getSystemColor(foreground));
+    }
+
+    /* get TopLeft corner */
+    public Point getTopLeft(){
+        return this.topLeft;
+    }
+
+    /* get TopRight corner */
+    public Point getTopRight(){
+        return new Point(this.getTopLeft().x+nodeWidth, this.getTopLeft().y);
+    }
+
+    /*get BellowLeft corner */
+    public Point getBellowLeft(){
+        return new Point(this.getTopLeft().x, this.getTopLeft().y+nodeHeight);
+    }
+
+    /* get bellowRight corner */
+    public Point getBellowRight(){
+        return new Point(this.getTopLeft().x+nodeWidth, this.getTopLeft().y+nodeHeight);
+    }
+
+    /* draw a Node */
+    public void drawNode(){
+        final Rectangle rec=this.getBounds();
+        this.addPaintListener(new PaintListener() {
+            @Override
+            public void paintControl(PaintEvent e) {
+                e.gc.drawString(label, 10, 15, true);
+                e.gc.drawRectangle(0, 0, nodeWidth-1, nodeHeight-1);
+            }
+        });
+    }
+
+    /* transfrom */
 }
-
