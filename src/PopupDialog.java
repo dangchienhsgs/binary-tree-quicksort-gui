@@ -36,7 +36,7 @@ public class PopupDialog extends Dialog {
         shell.setLayout(gridLayout);
 
         Label label = new Label(shell, SWT.CENTER);
-        label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
+        label.setLayoutData(new GridData(GridData.CENTER| GridData.HORIZONTAL_ALIGN_CENTER));
         label.setText(labelString);
 
         //final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
@@ -59,7 +59,7 @@ public class PopupDialog extends Dialog {
         });
 
 //        text.setText("");
-        shell.setSize((labelString.length())*9, 200);
+        shell.setSize((labelString.length())*9, 150);
         shell.open();
 
         Display display = parent.getDisplay();
