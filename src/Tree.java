@@ -1,16 +1,19 @@
-/**
- * Created by dangchienhsgs on 04/05/2014.
- */
 public class Tree {
     TreeNode root;
+
     private int width;
     int height;
+
+    private int left;
+    private int right;
+
     // Tao the first node
     public void makeRoot (int value){
         this.root=new TreeNode(value);
-        root.position=0;
+        root.position=1;
+        root.level=1;
     }
-    // add a node
+
     public int getHeight(TreeNode node){
         if ((node.left==null) && (node.right==null)){
             return 1;
@@ -22,65 +25,117 @@ public class Tree {
             return Math.max(1+getHeight(node.right), 1+getHeight(node.left));
         }
     }
-    public void addNode (int value, TreeNode node){
-        if (node.getValue()<value){
+
+    public TreeNode addNode (int value, TreeNode node){
+        if (node==null){
+            makeRoot(value);
+            return root;
+        } else if (node.getValue()<value){
             if (node.right==null){
                 node.right=new TreeNode(value);
+                node.right.level=node.level+1;
+                node.right.position=node.position+1;
+                node.right.parent=node;
+                computeAllNodeTree();
+                return node.right;
             } else {
-                addNode(value, node.right);
+                return addNode(value, node.right);
             }
         } else if (node.getValue()>=value){
             if (node.left==null){
                 node.left=new TreeNode(value);
+                node.left.level=node.level+1;
+                node.left.position=node.position-1;
+                node.left.parent=node;
+                computeAllNodeTree();
+                return node.left;
             } else {
-                addNode(value, node.left);
+                return addNode(value, node.left);
+            }
+        }
+        return null;
+    }
+
+    public void computeAllNodeTree(){
+        root.position=1;
+        root.level=1;
+        this.left=0;
+        this.right=0;
+        computePropertiesNode(root);
+    }
+    /////////////////////////////
+    private int min;
+    private TreeNode minNode;
+    void findNodeMinStep(TreeNode treeNode){
+        if (treeNode!=null){
+            if (treeNode.getValue()<min){
+                min=treeNode.getValue();
+                minNode=treeNode;
+            }
+            findNodeMinStep(treeNode.left);
+            findNodeMinStep(treeNode.right);
+        }
+    }
+
+    TreeNode findNodeMin(TreeNode treeNode){
+        min=treeNode.getValue();
+        minNode=treeNode;
+        findNodeMinStep(treeNode);
+        return minNode;
+    }
+    /////////////////////////////////////
+    public void removeNode (TreeNode treeNode){
+        if (treeNode!=null) {
+            if (treeNode.right==null){
+                treeNode=treeNode.left;
+            }
+            TreeNode minNode=findNodeMin(treeNode.right);
+            treeNode=minNode;
+            if (minNode.right==null){
+                minNode=minNode.left;
+            } else {
+                minNode=minNode.right;
             }
         }
     }
-    // show the tree
-    public void PrintTree(TreeNode node){
-        if (node!=null){
-            System.out.print (node.getValue());
-            PrintTree(node.left);
-            PrintTree(node.right);
+    ///////////////////////////////
+    public void computePropertiesNode(TreeNode treeNode){
+        if (left>treeNode.position) {
+            left=treeNode.position;
+        }
+        if (right<treeNode.position) right=treeNode.position;
+        if (treeNode.left!=null){
+            treeNode.left.position=treeNode.position-1;
+            treeNode.left.level=treeNode.level+1;
+            computePropertiesNode(treeNode.left);
+        }
+        if (treeNode.right!=null){
+            treeNode.right.position=treeNode.position+1;
+            treeNode.right.level=treeNode.level+1;
+            computePropertiesNode(treeNode.right);
         }
     }
-    // get the width
 
-    /* Day la phan tinh be ngang lon nhat cua tree, su dung
-     * de ve tree tren DrawPanel
-     */
-    int left; // tan cung ben trai
-    int right; // tan cung ben phai
-    private  void CalWidth(TreeNode node){
-        if (left>node.position) left=node.position;
-        if (right<node.position) right=node.position;
-        if (node.left!=null){
-            node.left.position=node.position-1;
-            CalWidth(node.left);
+    public TreeNode findNode(TreeNode treeNode, int value){
+        if (treeNode!=null){
+            if (treeNode.getValue()==value) return treeNode;
+            else if (treeNode.getValue()<value) return findNode (treeNode.right, value);
+            else return findNode (treeNode.left, value);
         }
-        if (node.right!=null){
-            node.right.position=node.position+1;
-            CalWidth(node.right);
+        else {
+            return null;
         }
-
     }
+
     int getLeft(){
-        this.left=0;
-        this.right=0;
-        CalWidth(root);
-        return this.left;
+        return left;
     }
     int getRight(){
-        this.left=0;
-        this.right=0;
-        CalWidth(root);
-        return this.right;
+        return right;
     }
     int getWidth (){
-        this.root.position=0;
-        this.left=0; this.right=0;
-        CalWidth(this.root);
-        return (this.right-this.left);
+        computeAllNodeTree();
+        return (right-left);
     }
+
 }
