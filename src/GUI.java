@@ -34,13 +34,18 @@ public class GUI {
     public void createMenuBar(){
         menuBar=new Menu(shell, SWT.BAR);
 
-        MenuItem fileMenuHeader=new MenuItem(menuBar, SWT.CASCADE);
-        fileMenuHeader.setText("Edit");
+        MenuItem editMenuHeader=new MenuItem(menuBar, SWT.CASCADE);
+        MenuItem actionMenuHeader=new MenuItem(menuBar, SWT.CASCADE);
+        editMenuHeader.setText("Edit");
+        actionMenuHeader.setText("Action");
 
-        Menu fileMenu=new Menu(shell, SWT.DROP_DOWN);
-        fileMenuHeader.setMenu(fileMenu);
+        Menu editMenu=new Menu(shell, SWT.DROP_DOWN);
+        Menu actionMenu=new Menu(shell, SWT.DROP_DOWN);
 
-        MenuItem addNewNode=new MenuItem(fileMenu, SWT.PUSH);
+        editMenuHeader.setMenu(editMenu);
+        actionMenuHeader.setMenu(actionMenu);
+
+        MenuItem addNewNode=new MenuItem(editMenu, SWT.PUSH);
         addNewNode.setText("Add new node");
         addNewNode.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -53,15 +58,36 @@ public class GUI {
 
             }
         });
-        MenuItem addNodeStep=new MenuItem(fileMenu, SWT.PUSH);
-        final MenuItem browseAllNode=new MenuItem(fileMenu, SWT.PUSH);
-        browseAllNode.setText("BrowseAllNode");
-        browseAllNode.addSelectionListener(new SelectionAdapter() {
+        ///////////////////////////////
+
+        MenuItem browseNodeFirst=new MenuItem(actionMenu, SWT.PUSH);
+        browseNodeFirst.setText("Browse All Node First Type");
+        browseNodeFirst.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
-                drawPanel.browseAllNode(drawPanel.tree.root);
+                drawPanel.browseAllNode(drawPanel.tree.root, 1);
             }
         });
+        //---------------------------------//
+        MenuItem browseNodeMiddle=new MenuItem(actionMenu, SWT.PUSH);
+        browseNodeMiddle.setText("Browse All Node Middle Type");
+        browseNodeMiddle.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.browseAllNode(drawPanel.tree.root, 2);
+            }
+        });
+        //---------------------------------//
+        MenuItem browseNodeLast=new MenuItem(actionMenu, SWT.PUSH);
+        browseNodeLast.setText("Browse All Node Last Type");
+        browseNodeLast.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.browseAllNode(drawPanel.tree.root, 3);
+            }
+        });
+        ///////////////////////////////////////////////////////////
+        MenuItem addNodeStep=new MenuItem(editMenu, SWT.PUSH);
         addNodeStep.setText("Add node step");
         addNodeStep.addSelectionListener(new SelectionAdapter() {
                     @Override
@@ -73,8 +99,7 @@ public class GUI {
                         }
                     }
                 });
-
-        MenuItem findNode=new MenuItem(fileMenu, SWT.PUSH);
+        MenuItem findNode=new MenuItem(actionMenu, SWT.PUSH);
         findNode.setText("Find a node");
         findNode.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -82,11 +107,12 @@ public class GUI {
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Find node by value", "Please give the value of node: ");
                 if (value!=null){
-                    drawPanel.findNode(drawPanel.tree.root, value);
+                    drawPanel.findNodeStep(drawPanel.tree.root, value);
                 }
             }
         });
-        MenuItem removeNode=new MenuItem(fileMenu, SWT.PUSH);
+        ///////////////////////////
+        MenuItem removeNode=new MenuItem(editMenu, SWT.PUSH);
         removeNode.setText("Remove a node by value");
         removeNode.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -98,6 +124,29 @@ public class GUI {
             }
         });
         shell.setMenuBar(menuBar);
+        /////////////////////////////
+        MenuItem findSuccessor=new MenuItem(actionMenu, SWT.PUSH);
+        findSuccessor.setText("Find a succesor of a node");
+        findSuccessor.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                InputDialog inputDialog=new InputDialog(shell);
+                Integer value=inputDialog.open("Delete a node", "Please give the value of the node: ");
+                drawPanel.findSucesscor(value);
+            }
+        });
+        ///////////////////////////////
+        MenuItem findPredecessor=new MenuItem(actionMenu, SWT.PUSH);
+        findPredecessor.setText("Find a predesesscor of a node");
+        findPredecessor.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                InputDialog inputDialog=new InputDialog(shell);
+                Integer value=inputDialog.open("Delete a node", "Please give the value of the node: ");
+                drawPanel.findPredesscor(value);
+            }
+        });
+        /////////////////////////////
     }
     public static void main(String args[]){
         GUI gui=new GUI();
