@@ -61,6 +61,20 @@ public class DrawingComposite extends ScrolledComposite {
         treeNode.node.setMenu(menu);
 
 
+        // add submenu
+        /*Menu popupMenu=new Menu (treeNode.node);
+        final TreeNode temp=treeNode;
+        MenuItem findSuccessor=new MenuItem(popupMenu, SWT.CASCADE);
+        findSuccessor.setText("Find successor");
+        findSuccessor.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                findSucesscor(temp);
+            }
+        });
+        treeNode.node.setMenu(popupMenu);
+        ///*/
+
         final Point[] offset = new Point[1];
         // add mouse click
         treeNode.node.addMouseListener(new MouseAdapter() {
@@ -186,6 +200,7 @@ public class DrawingComposite extends ScrolledComposite {
         rightMinNode.node.dispose();
 
         rightMinNode=rightMinNode.right;
+        tree.computeAllNodeTree();
         resetBounds(tree.root);
         resetLine(treeNode);
         composite.redraw();
@@ -216,6 +231,7 @@ public class DrawingComposite extends ScrolledComposite {
     /* This is the part of constructing browsing node
      *
      */
+
     TreeNode nodeQuene[] = new TreeNode[100];
     int n = 0;
 
@@ -225,7 +241,6 @@ public class DrawingComposite extends ScrolledComposite {
             n = n + 1;
             createQueneNodeFirst(treeNode.left);
             createQueneNodeFirst(treeNode.right);
-
         }
     }
     void createQueneNodeMiddle(TreeNode treeNode) {
@@ -387,7 +402,7 @@ public class DrawingComposite extends ScrolledComposite {
     }
 
     /* find a node by value */
-    public TreeNode findNode(final TreeNode treeNode, final int value) {
+    public TreeNode findNodeStep(final TreeNode treeNode, final int value) {
         if (treeNode == null) {
             statusBar.setText("There is no node");
         } else {
@@ -404,7 +419,7 @@ public class DrawingComposite extends ScrolledComposite {
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            findNode(treeNode.parent, value);
+                            findNodeStep(treeNode.parent, value);
                         }
                     }
                 };
@@ -422,11 +437,11 @@ public class DrawingComposite extends ScrolledComposite {
                         if (e.keyCode == 13) {
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
-                            findNode(treeNode.left, value);
+                            findNodeStep(treeNode.left, value);
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            findNode(treeNode.parent, value);
+                            findNodeStep(treeNode.parent, value);
                         }
                     }
                 };
@@ -442,11 +457,11 @@ public class DrawingComposite extends ScrolledComposite {
                         if (e.keyCode == 13) {
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
-                            findNode(treeNode.right, value);
+                            findNodeStep(treeNode.right, value);
                         } else if (e.keyCode==27){
                             removeKeyListener(this);
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                            findNode(treeNode.parent, value);
+                            findNodeStep(treeNode.parent, value);
                         }
                     }
                 };
@@ -455,6 +470,116 @@ public class DrawingComposite extends ScrolledComposite {
         }
         return null;
     }
+    //////////////////////////////////////////////////////////////
+    /*
+    Tim successsor
+     */
+    public void findSuccescorStep (final TreeNode treeNode){
+        treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+        KeyListener keyListener=new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.keyCode==13){
+                    removeKeyListener(this);
+                    if (treeNode.left!=null){
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        findSuccescorStep(treeNode.left);
+                    } else {
+                        // Da tim thay
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        statusBar.setText("Da tim thay");
+                    }
+                }
+            }
+        };
+        this.addKeyListener(keyListener);
+    }
+    public void findNode(TreeNode treeNode, int value){
+        if (treeNode!=null){
+            if (treeNode.getValue()==value){
+                this.treeNode=treeNode;
+            } else if (treeNode.getValue()>value){
+                findNode(treeNode.left, value);
+            } else if (treeNode.getValue()<value){
+                findNode(treeNode.right, value);
+            }
+        }
+    }
+    public void findSucesscor(int value){
+        treeNode=null;
+        findNode(tree.root, value);
+        if (treeNode!=null){
+            System.out.println ("Tim succesor"+treeNode.getValue());
+            if (treeNode.right==null){
+                statusBar.setText("This node don't have the right node");
+            } else {
+                treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+                KeyListener keyListener=new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent) {
+                        if (keyEvent.keyCode==13){
+                            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                            removeKeyListener(this);
+                            findSuccescorStep(treeNode.right);
+                        }
+                    }
+                };
+                this.addKeyListener(keyListener);
+            }
+        } else {
+            // Thong bao khong tim thay nut
+        }
+    }
 
+    ///////////////////////////////////////
+    public void findPredesscorStep (final TreeNode treeNode){
+        treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+        KeyListener keyListener=new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.keyCode==13){
+                    removeKeyListener(this);
+                    if (treeNode.right!=null){
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        findPredesscorStep(treeNode.right);
+                    } else {
+                        // Da tim thay
+                        treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                        statusBar.setText("Da tim thay");
+                    }
+                }
+            }
+        };
+        this.addKeyListener(keyListener);
+    }
+    public void findPredesscor(int value){
+        treeNode=null;
+        findNode(tree.root, value);
+        if (treeNode!=null){
+            System.out.println ("Tim succesor"+treeNode.getValue());
+            if (treeNode.left==null){
+                statusBar.setText("This node don't have the left node");
+            } else {
+                treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+                KeyListener keyListener=new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent) {
+                        if (keyEvent.keyCode==13){
+                            removeKeyListener(this);
+                            treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
+                            findPredesscorStep(treeNode.left);
+                        }
+                    }
+                };
+                this.addKeyListener(keyListener);
+            }
+        } else {
+            // Thong bao khong tim thay nut
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////
+    public void HeapSort(){
+
+    }
 }
 
