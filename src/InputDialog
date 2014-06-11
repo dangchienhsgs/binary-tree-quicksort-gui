@@ -30,6 +30,7 @@ public class InputDialog extends Dialog {
 
         shell.setLayout(new GridLayout(2, true));
 
+
         Label label = new Label(shell, SWT.NULL);
         label.setText(labelString);
 
