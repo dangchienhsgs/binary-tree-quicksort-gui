@@ -64,11 +64,13 @@ public class Tree {
     }
 
     public void computeAllNodeTree(){
-        root.position=1;
-        root.level=1;
-        this.left=0;
-        this.right=0;
-        computePropertiesNode(root);
+        if (root!=null){
+            root.position=1;
+            root.level=1;
+            this.left=0;
+            this.right=0;
+            computePropertiesNode(root);    
+        }        
     }
     /////////////////////////////
     private int min;
