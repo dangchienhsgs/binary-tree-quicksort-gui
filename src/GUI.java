@@ -17,6 +17,11 @@ public class GUI {
         shell.setText("Java Binary Tree Program");
         drawPanel=new DrawingComposite(this.shell, SWT.BORDER| SWT.V_SCROLL| SWT.H_SCROLL);
         drawPanel.setLayoutData(new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL));
+        drawPanel.addNode(9);
+        drawPanel.addNode(3);
+        drawPanel.addNode(16);
+        drawPanel.addNode(14);
+        drawPanel.addNode(15);
     }
     public void open(){
         this.shell.open();
