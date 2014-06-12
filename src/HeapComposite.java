@@ -108,6 +108,7 @@ public class HeapComposite extends ScrolledComposite {
     int preNode;
 
     public void maxHeapify(final int i, final int numberOfNode) {
+        System.out.println ("MaxHeapify: "+numberOfNode);
         tree.heapNode[i].node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
         largest = i;
         if ((i * 2 + 1 < numberOfNode) && (tree.heapNode[i].left.value > tree.heapNode[i].value)) {
@@ -153,17 +154,41 @@ public class HeapComposite extends ScrolledComposite {
     }
 
     public void buildMaxHeap() {
-        maxHeapify(tree.n / 2 - 1, tree.n);
+        if (tree.n==1){
+
+            KeyListener keyListener=new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    if (keyEvent.keyCode==13){
+                        composite.removeKeyListener(this);
+                        new PopupDialog(getShell()).open("Heap Sort", "Sorted list: "+new Integer(tree.heapNode[0].value).toString());
+                        getShell().dispose();
+                    }
+                }
+            };
+            composite.addKeyListener(keyListener);
+        } else maxHeapify(tree.n / 2 - 1, tree.n);
     }
     int numberOfNode;
     String str;
     public void heapSort() {
-
+        System.out.println ("Start Heapsort"+numberOfNode);
         final int k = numberOfNode-1;
         if (k==0){
-            tree.heapNode[0].node.dispose();
-            new PopupDialog(getShell()).open("Heap Sort", "Chuoi da sap xep tu lon den be: "+str);
-            getShell().dispose();
+            tree.heapNode[0].node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
+            KeyListener keyListener=new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    if (keyEvent.keyCode==13){
+                        composite.removeKeyListener(this);
+                        tree.heapNode[0].node.dispose();
+                        str=str+"  "+new Integer(tree.heapNode[0].value).toString();
+                        new PopupDialog(getShell()).open("Heap Sort", "Chuoi da sap xep tu lon den be: "+str);
+                        getShell().dispose();
+                    }
+                }
+            };
+            composite.addKeyListener(keyListener);
         } else {
 
             tree.heapNode[k].node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
@@ -193,11 +218,12 @@ public class HeapComposite extends ScrolledComposite {
 
                         composite.removePaintListener(tree.heapNode[k].lineConnectParent.paintListener);
                         composite.redraw();
-
+                        System.out.println (k+" bi Dispose");
                         tree.heapNode[k].node.dispose();
 
                         statusBar.setText(statusBar.getText()+"    "+tree.heapNode[k].value);
                         str=str+new Integer(tree.heapNode[k].value).toString()+"      ";
+
                         numberOfNode=numberOfNode-1;
                         if (numberOfNode>0) maxHeapify(0, numberOfNode);
 
