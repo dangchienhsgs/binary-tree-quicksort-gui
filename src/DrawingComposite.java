@@ -480,13 +480,12 @@ public class DrawingComposite extends ScrolledComposite {
         } else {
             treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
             if (treeNode.getValue() == value) {
-                statusBar.setText("Find a node that have the value +" + value);
-                statusBar.setText("Press enter to continume");
                 KeyListener keyListener = new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
                         System.out.println (e.keyCode);
                         if (e.keyCode == 13) {
+                            new PopupDialog(getShell()).open("Find a Node", "This node was created in our tree");
                             treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
                             removeKeyListener(this);
                         } else if (e.keyCode == 8) {
