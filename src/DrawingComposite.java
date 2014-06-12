@@ -759,8 +759,5 @@ public class DrawingComposite extends ScrolledComposite {
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    public void HeapSort() {
-
-    }
 }
 
