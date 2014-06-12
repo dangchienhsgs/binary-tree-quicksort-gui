@@ -666,7 +666,7 @@ public class DrawingComposite extends ScrolledComposite {
                     } else {
                         // Da tim thay
                         treeNode.node.setColor(SWT.COLOR_WHITE, SWT.COLOR_BLACK);
-                        statusBar.setText("Node "+new Integer(treeNode.getValue()).toString()+" is the predesccesor of"+new Integer(value).toString());
+                        new PopupDialog(getShell()).open("Find Predesscor", "Node "+new Integer(treeNode.getValue()).toString()+" is the predesccesor of"+new Integer(value).toString());
                     }
                 }
             }
