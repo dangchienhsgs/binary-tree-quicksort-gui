@@ -154,6 +154,36 @@ public class GUI {
                 }
             }
         });
+        final MenuItem heapSort=new MenuItem(actionMenu, SWT.PUSH);
+        heapSort.setText("HeapSort");
+        heapSort.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent selectionEvent) {
+                int value[]=new InputArray(shell).open("HeapSort", "Give me the array: ");
+                if (value!=null){
+//                    Display display = new Display();
+                    Shell shell2 = new Shell(display);
+                    shell2 = new Shell(display);
+                    shell2.setLayout(new GridLayout());
+                    shell2.setText("Java Binary Tree Program");
+                    HeapComposite heapComposite = new HeapComposite(shell2, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+                    heapComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL));
+                    shell2.open();
+                    shell2.layout();
+                    heapComposite.setTree(value);
+                    heapComposite.resetBounds();
+                    heapComposite.drawCompostite();
+                    heapComposite.str="";
+                    heapComposite.numberOfNode=heapComposite.tree.n;
+                    heapComposite.buildMaxHeap();
+                    while (!shell2.isDisposed()) {
+                        if (!display.readAndDispatch()) {
+                            display.sleep();
+                        }
+                    }
+                }
+            }
+        });
         /////////////////////////////
         MenuItem printItem=new MenuItem(actionMenu, SWT.PUSH);
         printItem.setText("Give the list sort elements");
