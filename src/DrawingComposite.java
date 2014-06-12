@@ -476,7 +476,7 @@ public class DrawingComposite extends ScrolledComposite {
     public TreeNode findNodeStep(final TreeNode treeNode, final int value) {
         if (treeNode == null) {
             statusBar.setText("There is no node with the value of "+new Integer(value).toString());
-            new PopupDialog(this.getShell()).open("Find a node","There is node node with the value "+new Integer(value).toString());
+            new PopupDialog(this.getShell()).open("Find a node","There is no node with the value "+new Integer(value).toString());
         } else {
             treeNode.node.setColor(SWT.COLOR_DARK_MAGENTA, SWT.COLOR_WHITE);
             if (treeNode.getValue() == value) {
