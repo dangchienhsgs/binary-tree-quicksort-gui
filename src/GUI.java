@@ -63,6 +63,7 @@ public class GUI {
         addNewNode.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                drawPanel.statusBar.setText("");
                 InputDialog numberInputDialog=new InputDialog(shell);
                 Integer value=numberInputDialog.open("Create a new node", "Input new node: ");
                 if (value!=null){
@@ -78,8 +79,8 @@ public class GUI {
         browseNodeFirst.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
-                drawPanel.browseNode(drawPanel.tree.root, 1);
                 drawPanel.statusBar.setText("");
+                drawPanel.browseNode(drawPanel.tree.root, 1);
             }
         });
         //---------------------------------//
@@ -88,8 +89,8 @@ public class GUI {
         browseNodeMiddle.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
-                drawPanel.browseNode(drawPanel.tree.root, 2);
                 drawPanel.statusBar.setText("");
+                drawPanel.browseNode(drawPanel.tree.root, 2);
             }
         });
         //---------------------------------//
@@ -98,8 +99,8 @@ public class GUI {
         browseNodeLast.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
-                drawPanel.browseNode(drawPanel.tree.root, 3);
                 drawPanel.statusBar.setText("");
+                drawPanel.browseNode(drawPanel.tree.root, 3);
             }
         });
         ///////////////////////////////////////////////////////////
@@ -112,7 +113,6 @@ public class GUI {
                         Integer value = inputDialog.open("Create a new node (Step)", "Input new node: ");
                         if (value != null) {
                             drawPanel.addNodeStep(drawPanel.tree.root, value);
-                            drawPanel.statusBar.setText("");
                         }
                     }
                 });
@@ -121,11 +121,11 @@ public class GUI {
         findNode.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                drawPanel.statusBar.setText("");
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Find", "Input value: ");
                 if (value!=null){
                     drawPanel.findNodeStep(drawPanel.tree.root, value);
-                    drawPanel.statusBar.setText("");
                 }
             }
         });
@@ -135,12 +135,12 @@ public class GUI {
         removeNode.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                drawPanel.statusBar.setText("");
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Remove", "Input value: ");
                 if (value!=null){
                     drawPanel.treeNode =drawPanel.tree.root;
                     drawPanel.remove_findNode(value);
-                    drawPanel.statusBar.setText("");
                 }
             }
         });
@@ -154,8 +154,9 @@ public class GUI {
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Get successor of a node", "Input value: ");
                 if (value!=null){
-                    drawPanel.findSucesscor(value);
                     drawPanel.statusBar.setText("");
+                    drawPanel.findSuccessor(value);
+                    //drawPanel.statusBar.setText("");
                 }
             }
         });
@@ -165,11 +166,12 @@ public class GUI {
         findPredecessor.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.statusBar.setText("");
                 InputDialog inputDialog=new InputDialog(shell);
                 Integer value=inputDialog.open("Get predecessor", "Input value: ");
                 if (value!=null){
-                    drawPanel.findPredecessor(value);
                     drawPanel.statusBar.setText("");
+                    drawPanel.findPredecessor(value);
                 }
             }
         });
@@ -178,6 +180,7 @@ public class GUI {
         findMax.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.statusBar.setText("");
                 drawPanel.findMaxNode(drawPanel.tree.root);
             }
         });
@@ -186,6 +189,7 @@ public class GUI {
         findMin.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.statusBar.setText("");
                 drawPanel.findMinNode(drawPanel.tree.root);
             }
         });
@@ -194,6 +198,7 @@ public class GUI {
         heapSort.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
+                drawPanel.statusBar.setText("");
                 int value[]=new InputArray(shell).open("Heap Sort Algorithm", "Input an integer array: ");
                 if (value!=null){
 //                    Display display = new Display();
@@ -226,8 +231,8 @@ public class GUI {
         printItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
-                drawPanel.printElement();
                 drawPanel.statusBar.setText("");
+                drawPanel.printElement();
             }
         });
     }
